@@ -16,7 +16,7 @@ requires-python = ">=3.12"
 authors = [
   {name = "Dax Harris"}
 ]
-description = "A modern pythonic wrapper around GPG"
+description = "API for subtask"
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = []
