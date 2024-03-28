@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "subtask-api"
+version = "0.0.1"
+dependencies = [
+    "typing-extensions",
+    "pydantic",
+    "litestar[standard]",
+    "beanie",
+    "redis"
+]
+requires-python = ">=3.12"
+authors = [
+  {name = "Dax Harris"}
+]
+description = "A modern pythonic wrapper around GPG"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = []
+classifiers = [
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Repository = "https://github.com/iTecAI/subtask"
+
+[tool.hatch.build.targets.wheel]
+packages = ["subtask-api"]
