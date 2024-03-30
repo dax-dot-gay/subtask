@@ -1,0 +1,10 @@
+FROM python:3.12.2-alpine
+
+RUN mkdir -p /subtask/subtask_api
+VOLUME /subtask/subtask_api
+COPY ./requirements.txt /subtask
+WORKDIR /subtask
+RUN python -m pip install -r requirements.txt
+EXPOSE 8000/tcp
+
+ENTRYPOINT [ "litestar", "--app", "subtask_api:app", "run", "--reload", "--host", "0.0.0.0" ]
