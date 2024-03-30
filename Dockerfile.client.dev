@@ -1,0 +1,10 @@
+FROM node:21-alpine
+
+RUN mkdir -p /subtask
+VOLUME /subtask
+EXPOSE 5173/tcp
+COPY ./subtask_client/package.json /subtask
+WORKDIR /subtask
+RUN yarn install
+
+ENTRYPOINT [ "yarn", "dev", "--host" ]

@@ -9,3 +9,54 @@ services:
 
     volumes:
       - ./subtask_api:/subtask/subtask_api
+
+    depends_on:
+      - mongo
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client.dev
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./subtask_client:/subtask
+
+    depends_on:
+      - api
+      - mongo
+
+  mongo:
+    image: mongo:jammy
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: subtask
+      MONGO_INITDB_ROOT_PASSWORD: subtask
+    volumes:
+      - ./vols/mongo/data:/data/db
+
+  mongo-admin:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: subtask
+      ME_CONFIG_MONGODB_ADMINPASSWORD: subtask
+      ME_CONFIG_BASICAUTH_USERNAME: subtask
+      ME_CONFIG_BASICAUTH_PASSWORD: subtask
+      ME_CONFIG_MONGODB_URL: mongodb://subtask:subtask@mongo:27017/
+    depends_on:
+      - mongo
+
+  redis:
+    image: redis/redis-stack-server:7.2.0-v9
+    restart: always
+    volumes:
+      - ./vols/redis/data:/data
+    ports:
+      - 6379:6379
+    environment:
+      - "REDIS_ARGS=--requirepass subtask"
