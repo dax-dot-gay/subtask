@@ -1,10 +1,11 @@
 FROM node:21-alpine
 
-RUN mkdir -p /subtask
-VOLUME /subtask
+RUN mkdir -p /subtask/subtask_client /subtask/certs
+VOLUME /subtask/subtask_client
 EXPOSE 5173/tcp
-COPY ./subtask_client/package.json /subtask
-WORKDIR /subtask
+COPY ./subtask_client/package.json /subtask/subtask_client
+COPY ./certs /subtask/certs
+WORKDIR /subtask/subtask_client
 RUN yarn install
 
 ENTRYPOINT [ "yarn", "dev", "--host" ]

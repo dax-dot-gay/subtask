@@ -1,10 +1,11 @@
 FROM python:3.12.2-alpine
 
-RUN mkdir -p /subtask/subtask_api
+RUN mkdir -p /subtask/subtask_api /subtask/certs
 VOLUME /subtask/subtask_api
 COPY ./requirements.txt /subtask
+COPY ./certs /subtask/certs
 WORKDIR /subtask
 RUN python -m pip install -r requirements.txt
 EXPOSE 8000/tcp
 
-ENTRYPOINT [ "litestar", "--app", "subtask_api:app", "run", "--reload", "--host", "0.0.0.0" ]
+ENTRYPOINT [ "litestar", "--app", "subtask_api:app", "run", "--reload", "--host", "0.0.0.0", "--ssl-certfile", "/subtask/certs/api/cert.pem", "--ssl-keyfile", "/subtask/certs/api/key.pem" ]
