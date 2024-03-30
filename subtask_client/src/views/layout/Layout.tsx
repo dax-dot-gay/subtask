@@ -9,6 +9,7 @@ export function SiteLayout() {
     const { t } = useTranslation();
     const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
     const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+    const loginState = false;
 
     return (
         <AppShell
@@ -16,24 +17,31 @@ export function SiteLayout() {
             navbar={{
                 width: 256,
                 breakpoint: "sm",
-                collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+                collapsed: {
+                    mobile: !mobileOpened || !loginState,
+                    desktop: !desktopOpened || !loginState,
+                },
             }}
             className="site-layout"
         >
             <AppShell.Header className="site-header">
                 <Group gap="md" h="100%" px="sm">
-                    <Burger
-                        opened={mobileOpened}
-                        onClick={toggleMobile}
-                        hiddenFrom="sm"
-                        size="sm"
-                    />
-                    <Burger
-                        opened={desktopOpened}
-                        onClick={toggleDesktop}
-                        visibleFrom="sm"
-                        size="sm"
-                    />
+                    {loginState && (
+                        <>
+                            <Burger
+                                opened={mobileOpened}
+                                onClick={toggleMobile}
+                                hiddenFrom="sm"
+                                size="sm"
+                            />
+                            <Burger
+                                opened={desktopOpened}
+                                onClick={toggleDesktop}
+                                visibleFrom="sm"
+                                size="sm"
+                            />
+                        </>
+                    )}
                     <Group gap="sm" align="center">
                         <Avatar className="app-logo" color="primary">
                             <IconSubtask />
