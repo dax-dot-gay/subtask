@@ -6,6 +6,7 @@ from .utils import ServerContext, CookieSessionManager, provide_session
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.di import Provide
 from .models import Session
+from .controllers import *
 
 
 async def handle_startup(app: Litestar) -> None:
@@ -34,7 +35,7 @@ def plain_text_exception_handler(req: Request, exc: Exception) -> Response:
 
 
 app = Litestar(
-    route_handlers=[get_root],
+    route_handlers=[get_root, UserAuthenticationController],
     state=State(state={"context": None}),
     on_startup=[handle_startup],
     middleware=[CookieSessionManager],

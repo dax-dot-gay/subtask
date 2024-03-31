@@ -47,3 +47,7 @@ class CookieSessionManager(MiddlewareProtocol):
 
 async def provide_session(scope: Scope) -> Session:
     return scope["token"]
+
+
+async def get_session_from_connection(connection: ASGIConnection) -> Session:
+    return connection.scope["token"]
