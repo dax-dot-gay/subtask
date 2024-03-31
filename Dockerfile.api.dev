@@ -4,6 +4,7 @@ RUN mkdir -p /subtask/subtask_api /subtask/certs
 VOLUME /subtask/subtask_api
 COPY ./requirements.txt /subtask
 COPY ./certs /subtask/certs
+COPY ./config.toml /subtask
 WORKDIR /subtask
 RUN python -m pip install -r requirements.txt
 EXPOSE 8000/tcp

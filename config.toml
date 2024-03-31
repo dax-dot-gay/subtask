@@ -1,0 +1,11 @@
+[databases.mongo]
+connection_uri = "mongodb://{username}:{password}@mongo:27017/?authSource=admin"
+username = "subtask"
+password = "subtask"
+database = "subtask"
+
+[databases.redis]
+connection_uri = "redis://{username}:{password}@redis:6379/{database}"
+username = "default"
+password = "subtask"
+database = "0"
