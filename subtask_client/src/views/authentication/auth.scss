@@ -1,0 +1,14 @@
+.auth-view {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    height: fit-content;
+    width: 384px;
+    max-width: calc(100% - 32px);
+    
+    .auth-section {
+        background-color: var(--mantine-color-default);
+    }
+}

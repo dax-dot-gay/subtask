@@ -3,5 +3,30 @@
     "names": {
       "app": "Subtask"
     }
+  },
+  "views": {
+    "auth": {
+      "header": {
+        "description": "Hierarchical Task Management"
+      },
+      "login": {
+        "header": "Log In"
+      },
+      "fields": {
+        "username": "Username",
+        "password": "Password",
+        "displayName": "Display Name",
+        "confirm": "Confirm Password"
+      },
+      "action": {
+        "modeCreate": "Create Account",
+        "login": "Log In",
+        "modeLogin": "Log In",
+        "create": "Create Account"
+      },
+      "create": {
+        "header": "Create Account"
+      }
+    }
   }
 }

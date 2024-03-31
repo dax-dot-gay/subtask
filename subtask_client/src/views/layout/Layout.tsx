@@ -1,4 +1,4 @@
-import { AppShell, Avatar, Burger, Group, Text } from "@mantine/core";
+import { AppShell, Avatar, Box, Burger, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
@@ -53,8 +53,10 @@ export function SiteLayout() {
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar className="site-nav"></AppShell.Navbar>
-            <AppShell.Main>
-                <Outlet />
+            <AppShell.Main className="site-main">
+                <Box className="site-container">
+                    <Outlet />
+                </Box>
             </AppShell.Main>
         </AppShell>
     );

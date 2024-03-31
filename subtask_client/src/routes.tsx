@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { SiteLayout } from "./views/layout/Layout";
+import { AuthenticationView } from "./views/authentication/Auth";
 
 export const router = createBrowserRouter([
     {
@@ -8,7 +9,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/login",
-                element: <></>,
+                element: <AuthenticationView />,
             },
             {
                 path: "/",
