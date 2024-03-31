@@ -2,4 +2,5 @@ typing-extensions
 pydantic
 litestar[standard]
 beanie
+motor
 redis
