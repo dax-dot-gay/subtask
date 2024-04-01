@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { SiteLayout } from "./views/layout/Layout";
 import { AuthenticationView } from "./views/authentication/Auth";
+import { RedirectionView } from "./views/redirection";
 
 export const router = createBrowserRouter([
     {
@@ -14,6 +15,10 @@ export const router = createBrowserRouter([
             {
                 path: "/",
                 element: <></>,
+            },
+            {
+                path: "/oauth/redirect/:connectionType",
+                element: <RedirectionView />,
             },
         ],
     },

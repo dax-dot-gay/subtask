@@ -35,7 +35,7 @@ def plain_text_exception_handler(req: Request, exc: Exception) -> Response:
 
 
 app = Litestar(
-    route_handlers=[get_root, UserAuthenticationController],
+    route_handlers=[get_root, UserAuthenticationController, ConnectionController],
     state=State(state={"context": None}),
     on_startup=[handle_startup],
     middleware=[CookieSessionManager],

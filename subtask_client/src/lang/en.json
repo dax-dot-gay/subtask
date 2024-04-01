@@ -8,6 +8,10 @@
       "warning": "Warning",
       "info": "Info",
       "success": "Success"
+    },
+    "connections": {
+      "github": "GitHub",
+      "gitlab": "GitLab"
     }
   },
   "views": {
@@ -56,6 +60,28 @@
   "layout": {
     "actions": {
       "logout": "Logout"
+    }
+  },
+  "modals": {
+    "userSettings": {
+      "title": "User Settings",
+      "sections": {
+        "general": {
+          "title": "General"
+        },
+        "connections": {
+          "title": "Connections",
+          "noConnections": "No Connections",
+          "create": "Add Connection",
+          "feedback": {
+            "successAdd": "Added connection successfully.",
+            "errorAdd": "Failed to add connection."
+          },
+          "item": {
+            "unknown": "Unknown Connection"
+          }
+        }
+      }
     }
   }
 }

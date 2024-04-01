@@ -4,3 +4,4 @@ from .cookie_session import (
     provide_session,
     get_session_from_connection,
 )
+from .config import *

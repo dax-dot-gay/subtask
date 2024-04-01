@@ -13,5 +13,9 @@ password = "subtask"
 database = "0"
 
 [oauth.github]
-client_id = "<OAUTH ID>"
-client_secret = "<OAUTH SECRET>"
+app_id = "<APP ID>"
+client_id = "<CLIENT ID>"
+client_secret = "<CLIENT SECRET>"
+private_key = """-----BEGIN RSA PRIVATE KEY-----
+<LONG RSA PRIVATE KEY>
+-----END RSA PRIVATE KEY-----"""

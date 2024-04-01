@@ -1,0 +1,25 @@
+.modal.user-settings {
+    .modal-tab.user-settings-connections {
+        .modal-panel {
+            .connections-box {
+                border-style: dashed;
+                position: relative;
+                
+                &.empty {
+                    min-height: 192px;
+
+                    .no-connections {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                    }
+                }
+
+                .connection-item {
+                    background-color: var(--mantine-color-default);
+                }
+            }
+        }
+    }
+}

@@ -7,40 +7,7 @@ from redis.asyncio import Redis
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from ..models import User
-
-
-class DatabaseConfig(BaseModel):
-    connection_uri: str
-    username: str
-    password: str
-    database: str
-
-    @property
-    def parsed(self) -> str:
-        return self.connection_uri.format(
-            username=quote(self.username),
-            password=quote(self.password),
-            database=quote(self.database),
-        )
-
-
-class AllDatabasesConfig(BaseModel):
-    mongo: DatabaseConfig
-    redis: DatabaseConfig
-
-
-class OAuthConnectionConfig(BaseModel):
-    client_id: str
-    client_secret: str
-
-
-class OAuthConfig(BaseModel):
-    github: OAuthConnectionConfig
-
-
-class ServerConfig(BaseModel):
-    databases: AllDatabasesConfig
-    oauth: OAuthConfig
+from .config import *
 
 
 class ServerContext:

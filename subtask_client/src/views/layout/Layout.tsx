@@ -22,6 +22,7 @@ import {
 import "./layout.scss";
 import { useApi, useApiMethods, useUser } from "../../util/api";
 import { useEffect } from "react";
+import { UserSettingsModal } from "../../components/modals/userSettings/UserSettingsModal";
 
 export function SiteLayout() {
     const { t } = useTranslation();
@@ -33,6 +34,8 @@ export function SiteLayout() {
     const nav = useNavigate();
     const location = useLocation();
     const { userAuth } = useApiMethods();
+    const [settings, { open: openSettings, close: closeSettings }] =
+        useDisclosure(false);
 
     useEffect(() => {
         if (api.status === "ready" && !user && location.pathname !== "/login") {
@@ -99,7 +102,11 @@ export function SiteLayout() {
                                 </Stack>
                             </Group>
                             <Group wrap="nowrap" gap="sm">
-                                <ActionIcon size={36} variant="light">
+                                <ActionIcon
+                                    size={36}
+                                    variant="light"
+                                    onClick={openSettings}
+                                >
                                     <IconSettings size={20} />
                                 </ActionIcon>
                                 <Button
@@ -121,6 +128,7 @@ export function SiteLayout() {
                 <Box className="site-container">
                     <Outlet />
                 </Box>
+                <UserSettingsModal open={settings} onClose={closeSettings} />
             </AppShell.Main>
         </AppShell>
     );
