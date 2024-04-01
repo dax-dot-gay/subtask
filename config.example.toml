@@ -1,0 +1,17 @@
+# Using default values from dev compose
+[databases.mongo]
+connection_uri = "mongodb://{username}:{password}@mongo:27017/?authSource=admin"
+username = "subtask"
+password = "subtask"
+database = "subtask"
+
+# Using default values from dev compose
+[databases.redis]
+connection_uri = "redis://{username}:{password}@redis:6379/{database}"
+username = "default"
+password = "subtask"
+database = "0"
+
+[oauth.github]
+client_id = "<OAUTH ID>"
+client_secret = "<OAUTH SECRET>"

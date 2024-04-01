@@ -29,8 +29,18 @@ class AllDatabasesConfig(BaseModel):
     redis: DatabaseConfig
 
 
+class OAuthConnectionConfig(BaseModel):
+    client_id: str
+    client_secret: str
+
+
+class OAuthConfig(BaseModel):
+    github: OAuthConnectionConfig
+
+
 class ServerConfig(BaseModel):
     databases: AllDatabasesConfig
+    oauth: OAuthConfig
 
 
 class ServerContext:

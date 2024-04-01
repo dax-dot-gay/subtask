@@ -1,14 +1,36 @@
 from hashlib import pbkdf2_hmac
 import os
+from typing import Literal
 
 from pydantic import BaseModel
 from .base import BaseObject
+
+
+class RedactedUserConnection(BaseModel):
+    type: Literal["github"]
+    account_name: str | None = None
+    account_image: str | None = None
+
+
+class UserConnection(BaseModel):
+    type: Literal["github"]
+    access_token: str
+    account_name: str | None = None
+    account_image: str | None = None
+
+    def redact(self) -> RedactedUserConnection:
+        return RedactedUserConnection(
+            type=self.type,
+            account_name=self.account_name,
+            account_image=self.account_image,
+        )
 
 
 class RedactedUser(BaseModel):
     id: str
     username: str
     display_name: str
+    connections: list[RedactedUserConnection]
 
 
 class User(BaseObject):
@@ -16,6 +38,7 @@ class User(BaseObject):
     display_name: str
     password_hash: str
     password_salt: str
+    connections: list[UserConnection] = []
 
     class Settings:
         name = "users"
@@ -48,5 +71,8 @@ class User(BaseObject):
 
     def redact(self) -> RedactedUser:
         return RedactedUser(
-            id=self.id, username=self.username, display_name=self.display_name
+            id=self.id,
+            username=self.username,
+            display_name=self.display_name,
+            connections=[i.redact() for i in self.connections],
         )

@@ -4,3 +4,6 @@ litestar[standard]
 beanie
 motor
 redis
+PyGithub
+httpx
+python-gitlab
