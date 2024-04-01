@@ -2,6 +2,12 @@
   "common": {
     "names": {
       "app": "Subtask"
+    },
+    "notifications": {
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info",
+      "success": "Success"
     }
   },
   "views": {
@@ -26,7 +32,30 @@
       },
       "create": {
         "header": "Create Account"
+      },
+      "errors": {
+        "usernameEmpty": "A username must be provided.",
+        "password": {
+          "empty": "A password must be provided.",
+          "match": "Passwords must match."
+        },
+        "displayNameEmpty": "A display name must be provided.",
+        "confirmPassword": {
+          "match": "Passwords must match",
+          "empty": "Password must be confirmed."
+        }
+      },
+      "feedback": {
+        "created": "User created successfully!",
+        "creationFailed": "User creation failed. The desired username may already exist.",
+        "login": "Logged in!",
+        "loginFailed": "Failed to login: Unknown username or password."
       }
+    }
+  },
+  "layout": {
+    "actions": {
+      "logout": "Logout"
     }
   }
 }

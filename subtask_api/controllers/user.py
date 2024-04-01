@@ -24,7 +24,7 @@ class UserAuthenticationController(Controller):
         self, context: ServerContext, session: Session, data: UserCreationModel
     ) -> User:
         existing = await User.from_query({"username": data.username})
-        if len(existing) >= 0:
+        if len(existing) > 0:
             raise MethodNotAllowedException("The desired username already exists")
 
         created = User.create(data.username, data.displayName, data.password)
@@ -47,3 +47,8 @@ class UserAuthenticationController(Controller):
         session.user_id = results[0].id
         await session.to_storage(context.store)
         return results[0]
+
+    @post("/logout")
+    async def logout_user(self, context: ServerContext, session: Session) -> None:
+        session.user_id = None
+        await session.to_storage(context.store)

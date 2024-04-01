@@ -1,6 +1,14 @@
 from hashlib import pbkdf2_hmac
 import os
+
+from pydantic import BaseModel
 from .base import BaseObject
+
+
+class RedactedUser(BaseModel):
+    id: str
+    username: str
+    display_name: str
 
 
 class User(BaseObject):
@@ -37,3 +45,8 @@ class User(BaseObject):
         hashed = pbkdf2_hmac("sha256", new_password.encode(), salt, 500000).hex()
         self.password_hash = hashed
         self.password_salt = salt.hex()
+
+    def redact(self) -> RedactedUser:
+        return RedactedUser(
+            id=self.id, username=self.username, display_name=self.display_name
+        )

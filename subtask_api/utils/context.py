@@ -1,6 +1,7 @@
 from urllib.parse import quote
 from pydantic import BaseModel
 from litestar.stores.redis import RedisStore
+from litestar.datastructures import State
 import tomllib
 from redis.asyncio import Redis
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -47,3 +48,7 @@ class ServerContext:
             database=self.mongo[self.config.databases.mongo.database],
             document_models=[User],
         )
+
+
+async def provide_context(state: State) -> ServerContext:
+    return state.context

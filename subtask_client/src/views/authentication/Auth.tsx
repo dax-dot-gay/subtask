@@ -23,6 +23,9 @@ import {
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { VisibilityIcon } from "../../components/VisibilityIcon";
+import { useApiMethods } from "../../util/api";
+import { useNotif } from "../../util/notifs";
+import { useNavigate } from "react-router-dom";
 
 type AuthenticationFormType = {
     username: string;
@@ -76,6 +79,7 @@ function LoginMode({
                     justify="space-between"
                     px="sm"
                     pl="xs"
+                    type="submit"
                 >
                     {t("views.auth.action.login")}
                 </Button>
@@ -142,6 +146,7 @@ function CreateAccountMode({
                     justify="space-between"
                     px="sm"
                     pl="xs"
+                    type="submit"
                 >
                     {t("views.auth.action.create")}
                 </Button>
@@ -151,6 +156,8 @@ function CreateAccountMode({
 }
 
 export function AuthenticationView() {
+    const [creating, { toggle: toggleCreating }] = useDisclosure(false);
+    const { t } = useTranslation();
     const form = useForm<AuthenticationFormType>({
         initialValues: {
             username: "",
@@ -158,9 +165,33 @@ export function AuthenticationView() {
             password: "",
             confirmPassword: "",
         },
+        validate: {
+            username: (value) =>
+                value.length > 0 ? null : t("views.auth.errors.usernameEmpty"),
+            password: (value, { confirmPassword }) =>
+                value.length > 0
+                    ? creating && confirmPassword !== value
+                        ? t("views.auth.errors.password.match")
+                        : null
+                    : t("views.auth.errors.password.empty"),
+            displayName: (value) =>
+                value.length > 0 || !creating
+                    ? null
+                    : t("views.auth.errors.displayNameEmpty"),
+            confirmPassword: (value, { password }) =>
+                creating
+                    ? value.length > 0
+                        ? value === password
+                            ? null
+                            : t("views.auth.errors.confirmPassword.match")
+                        : t("views.auth.errors.confirmPassword.empty")
+                    : null,
+        },
     });
-    const [creating, { toggle: toggleCreating }] = useDisclosure(false);
-    const { t } = useTranslation();
+    const { userAuth } = useApiMethods();
+    const { success, error } = useNotif();
+    const nav = useNavigate();
+
     return (
         <Stack className="auth-view" gap="md">
             <Paper
@@ -182,14 +213,56 @@ export function AuthenticationView() {
                 </Group>
             </Paper>
             <Paper className="auth-section main" p="sm" radius="sm" shadow="sm">
-                {creating ? (
-                    <CreateAccountMode
-                        form={form}
-                        toggleMode={toggleCreating}
-                    />
-                ) : (
-                    <LoginMode form={form} toggleMode={toggleCreating} />
-                )}
+                <form
+                    onSubmit={form.onSubmit(
+                        ({ username, displayName, password }) => {
+                            if (creating) {
+                                userAuth
+                                    .create(username, displayName, password)
+                                    .then((result) => {
+                                        if (result) {
+                                            success(
+                                                t("views.auth.feedback.created")
+                                            );
+                                            nav("/");
+                                        } else {
+                                            error(
+                                                t(
+                                                    "views.auth.feedback.creationFailed"
+                                                )
+                                            );
+                                        }
+                                    });
+                            } else {
+                                userAuth
+                                    .login(username, password)
+                                    .then((result) => {
+                                        if (result) {
+                                            success(
+                                                t("views.auth.feedback.login")
+                                            );
+                                            nav("/");
+                                        } else {
+                                            error(
+                                                t(
+                                                    "views.auth.feedback.loginFailed"
+                                                )
+                                            );
+                                        }
+                                    });
+                            }
+                        }
+                    )}
+                >
+                    {creating ? (
+                        <CreateAccountMode
+                            form={form}
+                            toggleMode={toggleCreating}
+                        />
+                    ) : (
+                        <LoginMode form={form} toggleMode={toggleCreating} />
+                    )}
+                </form>
             </Paper>
         </Stack>
     );

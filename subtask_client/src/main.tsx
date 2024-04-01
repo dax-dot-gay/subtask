@@ -8,6 +8,7 @@ import "@mantine/code-highlight/styles.css";
 import "@mantine/spotlight/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/tiptap/styles.css";
+import "@mantine/notifications/styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>

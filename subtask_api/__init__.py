@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import Any
 from litestar import Litestar, get, MediaType, Request, Response
 from litestar.datastructures import State
-from .utils import ServerContext, CookieSessionManager, provide_session
+from .utils import ServerContext, CookieSessionManager, provide_session, provide_context
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.di import Provide
-from .models import Session
+from .models import Session, ExpandedSession
 from .controllers import *
 
 
@@ -16,8 +16,8 @@ async def handle_startup(app: Litestar) -> None:
 
 
 @get("/")
-async def get_root(session: Session) -> Session:
-    return session
+async def get_root(session: Session) -> ExpandedSession:
+    return await session.expand()
 
 
 def plain_text_exception_handler(req: Request, exc: Exception) -> Response:
@@ -40,5 +40,8 @@ app = Litestar(
     on_startup=[handle_startup],
     middleware=[CookieSessionManager],
     exception_handlers={Exception: plain_text_exception_handler},
-    dependencies={"session": Provide(provide_session)},
+    dependencies={
+        "session": Provide(provide_session),
+        "context": Provide(provide_context),
+    },
 )

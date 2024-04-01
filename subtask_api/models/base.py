@@ -46,10 +46,8 @@ class BaseObject(Document):
         Returns:
             TBase | None: The located Object, or None if not found.
         """
-        results = await cls.from_query({"id": id}, limit=1)
-        if len(results) > 0:
-            return results[0]
-        return None
+        result = await cls.get(id)
+        return result
 
 
 class BaseStoredObject(BaseModel):
