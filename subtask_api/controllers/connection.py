@@ -1,12 +1,10 @@
 from typing import Any
 from litestar import get, post, Controller
 from ..models import (
-    Session,
     User,
     provide_user,
     guard_logged_in,
     RedactedUserConnection,
-    UserConnection,
 )
 from litestar.di import Provide
 from ..connections import *
@@ -18,6 +16,10 @@ class ConnectionController(Controller):
     path = "/connections"
     guards = [guard_logged_in]
     dependencies = {"user": Provide(provide_user)}
+
+    @get("/")
+    async def get_all_connections(self, user: User) -> list[RedactedUserConnection]:
+        return [i.redact() for i in await user.get_connections()]
 
     @get("/{connection_type:str}/authentication/redirect")
     async def get_redirect_url(
@@ -42,24 +44,20 @@ class ConnectionController(Controller):
         if connection_type in CONNECTION_PROVIDERS.keys() and hasattr(
             context.config.oauth, connection_type
         ):
-            token = await CONNECTION_PROVIDERS[connection_type].get_access_token(
+            connection = await CONNECTION_PROVIDERS[connection_type].get_connection(
                 getattr(context.config.oauth, connection_type), **data
             )
 
-            if token:
-                instance = CONNECTION_PROVIDERS[connection_type](
-                    getattr(context.config.oauth, connection_type), token
+            if connection:
+                instance = await CONNECTION_PROVIDERS[connection_type].create(
+                    getattr(context.config.oauth, connection_type), connection
                 )
                 profile_data = await instance.get_profile_info()
-                new_connection = UserConnection(
-                    type=connection_type,
-                    access_token=token,
-                    account_name=profile_data.account_name,
-                    account_image=profile_data.account_image,
-                )
-                user.connections.append(new_connection)
-                await user.save()
-                return new_connection.redact()
+                connection.account_name = profile_data.account_name
+                connection.account_image = profile_data.account_image
+                connection.user_id = user.id
+                await connection.save()
+                return connection.redact()
             else:
                 raise InternalServerException("Failed to get authentication token.")
 

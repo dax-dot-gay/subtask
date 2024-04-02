@@ -6,6 +6,5 @@ from .user import (
     get_active_user,
     provide_user,
     guard_logged_in,
-    UserConnection,
-    RedactedUserConnection,
 )
+from .connection import RedactedUserConnection, UserConnection

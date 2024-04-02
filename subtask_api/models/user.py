@@ -1,45 +1,19 @@
 from hashlib import pbkdf2_hmac
 import os
-from secrets import token_urlsafe
-from typing import Literal
 
-from httpx import request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from .base import BaseObject
+from .connection import UserConnection
 from litestar.connection import ASGIConnection
 from litestar.handlers.base import BaseRouteHandler
 from litestar.exceptions import *
 from litestar import Request
 
 
-class RedactedUserConnection(BaseModel):
-    id: str
-    type: Literal["github"]
-    account_name: str | None = None
-    account_image: str | None = None
-
-
-class UserConnection(BaseModel):
-    id: str = Field(default_factory=lambda: token_urlsafe(32))
-    type: Literal["github"]
-    access_token: str
-    account_name: str | None = None
-    account_image: str | None = None
-
-    def redact(self) -> RedactedUserConnection:
-        return RedactedUserConnection(
-            id=self.id,
-            type=self.type,
-            account_name=self.account_name,
-            account_image=self.account_image,
-        )
-
-
 class RedactedUser(BaseModel):
     id: str
     username: str
     display_name: str
-    connections: list[RedactedUserConnection]
 
 
 class User(BaseObject):
@@ -47,7 +21,6 @@ class User(BaseObject):
     display_name: str
     password_hash: str
     password_salt: str
-    connections: list[UserConnection] = []
 
     class Settings:
         name = "users"
@@ -83,8 +56,10 @@ class User(BaseObject):
             id=self.id,
             username=self.username,
             display_name=self.display_name,
-            connections=[i.redact() for i in self.connections],
         )
+
+    async def get_connections(self) -> list[UserConnection]:
+        return await UserConnection.from_query(query={"user_id": self.id})
 
 
 async def get_active_user(connection: ASGIConnection) -> User | None:

@@ -21,7 +21,7 @@ import {
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./userSettings.scss";
-import { UserConnectionType } from "../../../util/api/types/user";
+import { UserConnectionType } from "../../../util/api/types/connection";
 
 function ConnectionItem({ connection }: { connection: UserConnectionType }) {
     const { t } = useTranslation();
@@ -92,18 +92,28 @@ function ConnectionSettingsPanel() {
         [connections.oauth.getRedirect, user?.id]
     );
 
+    const [connectionsList, setConnectionsList] = useState<
+        UserConnectionType[]
+    >([]);
+
+    useEffect(() => {
+        connections.oauth
+            .getConnections()
+            .then((value) => setConnectionsList(value ?? []));
+    }, [user?.id]);
+
     return user ? (
-        <Stack gap="sm" className="modal-panel user-connections">
+        <Stack gap="sm" className="modal-panel connectionList">
             <Paper
                 withBorder
                 className={
                     "connections-box" +
-                    (user.connections.length === 0 ? " empty" : "")
+                    (connectionsList.length === 0 ? " empty" : "")
                 }
                 radius="sm"
                 p="sm"
             >
-                {user.connections.length === 0 ? (
+                {connectionsList.length === 0 ? (
                     <Stack gap="md" align="center" className="no-connections">
                         <Group gap="sm">
                             <IconPlugConnectedX />
@@ -131,13 +141,13 @@ function ConnectionSettingsPanel() {
                     </Stack>
                 ) : (
                     <Stack gap="sm">
-                        {user.connections.map((v) => (
+                        {connectionsList.map((v) => (
                             <ConnectionItem connection={v} key={v.id} />
                         ))}
                     </Stack>
                 )}
             </Paper>
-            {user.connections.length > 0 && (
+            {connectionsList.length > 0 && (
                 <Group gap="sm" wrap="nowrap" grow>
                     <Button
                         leftSection={<IconBrandGithub size={20} />}
