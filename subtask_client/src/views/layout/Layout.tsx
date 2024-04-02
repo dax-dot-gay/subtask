@@ -7,6 +7,9 @@ import {
     Button,
     Divider,
     Group,
+    Paper,
+    ScrollAreaAutosize,
+    Skeleton,
     Stack,
     Text,
 } from "@mantine/core";
@@ -15,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
     IconLogout2,
+    IconPlus,
     IconSettings,
     IconSubtask,
     IconUser,
@@ -47,7 +51,7 @@ export function SiteLayout() {
         <AppShell
             header={{ height: 60 }}
             navbar={{
-                width: 256,
+                width: 300,
                 breakpoint: "sm",
                 collapsed: {
                     mobile: !mobileOpened || !loginState,
@@ -87,7 +91,29 @@ export function SiteLayout() {
             <AppShell.Navbar className="site-nav">
                 {user && (
                     <Stack gap={2} className="nav-stack-main">
-                        <Stack gap="sm" className="nav-stack-projects"></Stack>
+                        <Paper
+                            className="nav-projects"
+                            p="xs"
+                            m="xs"
+                            mb={0}
+                            shadow="sm"
+                        >
+                            <ScrollAreaAutosize className="nav-project-scroll">
+                                <Stack
+                                    gap="sm"
+                                    className="nav-stack-projects"
+                                ></Stack>
+                            </ScrollAreaAutosize>
+                        </Paper>
+                        <Box p="xs">
+                            <Button
+                                fullWidth
+                                leftSection={<IconPlus size={20} />}
+                                justify="space-between"
+                            >
+                                {t("layout.actions.createProject")}
+                            </Button>
+                        </Box>
                         <Divider />
                         <Stack gap="xs" className="nav-stack-actions" p="sm">
                             <Group gap="sm" justify="space-between">

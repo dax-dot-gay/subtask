@@ -70,7 +70,8 @@
   },
   "layout": {
     "actions": {
-      "logout": "Logout"
+      "logout": "Logout",
+      "createProject": "New Project"
     }
   },
   "modals": {
