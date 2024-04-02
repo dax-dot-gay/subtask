@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { useApiMethods, useUser } from "../../../util/api";
+import { useApiMethods, useApiReload, useUser } from "../../../util/api";
 import {
     ActionIcon,
     Avatar,
     Badge,
+    Box,
     Button,
     Group,
     Modal,
@@ -11,19 +12,26 @@ import {
     Stack,
     Tabs,
     Text,
+    TextInput,
 } from "@mantine/core";
 import {
     IconBrandGithub,
     IconBrandGitlab,
+    IconDeviceFloppy,
+    IconPhotoX,
     IconPlug,
     IconPlugConnectedX,
+    IconSignature,
     IconUser,
+    IconUserCircle,
     IconUserCog,
 } from "@tabler/icons-react";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./userSettings.scss";
 import { UserConnectionType } from "../../../util/api/types/connection";
 import { modals } from "@mantine/modals";
+import { useNotif } from "../../../util/notifs";
 
 function ConnectionItem({
     connection,
@@ -215,6 +223,164 @@ function ConnectionSettingsPanel() {
     );
 }
 
+function GeneralSettingsPanel() {
+    const user = useUser();
+    const { t } = useTranslation();
+    const { user: userApi } = useApiMethods();
+    const reload = useApiReload();
+
+    const [username, setUsername] = useState<string>(user?.username ?? "");
+    const [displayName, setDisplayName] = useState<string>(
+        user?.display_name ?? ""
+    );
+    const { error } = useNotif();
+
+    useEffect(() => {
+        if (user?.username) {
+            setUsername(user.username);
+        }
+    }, [user?.username]);
+
+    useEffect(() => {
+        if (user?.display_name) {
+            setDisplayName(user.display_name);
+        }
+    }, [user?.display_name]);
+
+    return user ? (
+        <Stack className="modal-panel settings-general" gap="sm">
+            <Group wrap="nowrap" gap="xs" align="end">
+                <TextInput
+                    leftSection={<IconUser size={20} />}
+                    variant="filled"
+                    label={t(
+                        "modals.userSettings.sections.general.field.username"
+                    )}
+                    style={{ flexGrow: 1 }}
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                />
+                <ActionIcon
+                    size={36}
+                    disabled={
+                        username.length === 0 || username == user?.username
+                    }
+                    onClick={() =>
+                        userApi.self.updateUsername(username).then((result) => {
+                            if (result) {
+                                reload();
+                            } else {
+                                error(
+                                    t(
+                                        "modals.userSettings.sections.general.error.username"
+                                    )
+                                );
+                            }
+                        })
+                    }
+                >
+                    <IconDeviceFloppy size={20} />
+                </ActionIcon>
+            </Group>
+            <Group wrap="nowrap" gap="xs" align="end">
+                <TextInput
+                    leftSection={<IconSignature size={20} />}
+                    variant="filled"
+                    label={t(
+                        "modals.userSettings.sections.general.field.displayName"
+                    )}
+                    style={{ flexGrow: 1 }}
+                    value={displayName}
+                    onChange={(event) => setDisplayName(event.target.value)}
+                />
+                <ActionIcon
+                    size={36}
+                    disabled={
+                        displayName.length === 0 ||
+                        displayName == user?.display_name
+                    }
+                    onClick={() =>
+                        userApi.self.updateDisplayName(displayName).then(reload)
+                    }
+                >
+                    <IconDeviceFloppy size={20} />
+                </ActionIcon>
+            </Group>
+            <Box
+                className={
+                    "profile-drop" + (user.avatar ? " with-current" : "")
+                }
+            >
+                <Dropzone
+                    onDrop={(files) => {
+                        if (files.length > 0) {
+                            userApi.self.updateAvatar(files[0]).then(reload);
+                        }
+                    }}
+                    accept={IMAGE_MIME_TYPE}
+                    maxFiles={1}
+                    multiple={false}
+                    maxSize={64 * 1024 ** 2}
+                >
+                    <Group
+                        justify="center"
+                        gap="xl"
+                        mih={220}
+                        style={{ pointerEvents: "none" }}
+                        className="dropzone-text"
+                    >
+                        <IconUserCircle
+                            size={64}
+                            color="var(--mantine-color-dimmed)"
+                        />
+
+                        <div>
+                            <Text size="xl" inline>
+                                {t("common.actions.dropzone.instruction")}
+                            </Text>
+                            <Text size="sm" c="dimmed" inline mt={7}>
+                                {t(
+                                    "modals.userSettings.sections.general.field.profile.dropzone"
+                                )}
+                            </Text>
+                        </div>
+                    </Group>
+                </Dropzone>
+                {user.avatar && (
+                    <Paper p="sm" className="current-profile">
+                        <Group gap="sm" justify="space-between">
+                            <Stack gap={2}>
+                                <Text>
+                                    {t(
+                                        "modals.userSettings.sections.general.field.profile.current"
+                                    )}
+                                </Text>
+                                <Button
+                                    variant="light"
+                                    size="xs"
+                                    color="red"
+                                    leftSection={<IconPhotoX size={16} />}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        userApi.self.clearAvatar().then(reload);
+                                    }}
+                                >
+                                    {t(
+                                        "modals.userSettings.sections.general.field.profile.remove"
+                                    )}
+                                </Button>
+                            </Stack>
+                            <Avatar size="lg" src={`/api${user.avatar}`} />
+                        </Group>
+                    </Paper>
+                )}
+            </Box>
+        </Stack>
+    ) : (
+        <></>
+    );
+}
+
 export function UserSettingsModal({
     open,
     onClose,
@@ -270,7 +436,7 @@ export function UserSettingsModal({
                     value="general"
                     className="modal-tab user-settings-general"
                 >
-                    TODO
+                    <GeneralSettingsPanel />
                 </Tabs.Panel>
                 <Tabs.Panel
                     p="xs"

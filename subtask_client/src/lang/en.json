@@ -22,7 +22,10 @@
     },
     "actions": {
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "dropzone": {
+        "instruction": "Drag images here or click to select files"
+      }
     }
   },
   "views": {
@@ -79,7 +82,19 @@
       "title": "User Settings",
       "sections": {
         "general": {
-          "title": "General"
+          "title": "General",
+          "field": {
+            "username": "Username",
+            "displayName": "Display Name",
+            "profile": {
+              "dropzone": "Upload a new profile picture (must not exceed 64 MB)",
+              "current": "Current Image",
+              "remove": "Clear Image"
+            }
+          },
+          "error": {
+            "username": "Username already exists."
+          }
         },
         "connections": {
           "title": "Connections",

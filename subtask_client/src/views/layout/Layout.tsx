@@ -9,7 +9,6 @@ import {
     Group,
     Paper,
     ScrollAreaAutosize,
-    Skeleton,
     Stack,
     Text,
 } from "@mantine/core";
@@ -117,9 +116,17 @@ export function SiteLayout() {
                         <Divider />
                         <Stack gap="xs" className="nav-stack-actions" p="sm">
                             <Group gap="sm" justify="space-between">
-                                <Avatar color="primary" size="md">
-                                    <IconUser size={20} />
-                                </Avatar>
+                                {user.avatar ? (
+                                    <Avatar
+                                        color="primary"
+                                        size="md"
+                                        src={`/api${user.avatar}`}
+                                    />
+                                ) : (
+                                    <Avatar color="primary" size="md">
+                                        <IconUser size={20} />
+                                    </Avatar>
+                                )}
                                 <Stack gap={0} align="end">
                                     <Text>{user.display_name}</Text>
                                     <Text size="xs" c="dimmed">

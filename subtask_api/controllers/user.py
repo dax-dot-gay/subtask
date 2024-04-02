@@ -1,7 +1,20 @@
-from litestar import Controller, get, post
+from typing import Annotated
+from litestar import Controller, get, post, delete
 from litestar.exceptions import *
+from litestar.di import Provide
+from litestar.datastructures import UploadFile
+from litestar.params import Body
+from litestar.enums import RequestEncodingType
 from pydantic import BaseModel
-from ..models import User, Session
+
+from ..models import (
+    User,
+    Session,
+    guard_logged_in,
+    provide_user,
+    RedactedUser,
+    GridFile,
+)
 from ..utils import ServerContext
 
 
@@ -52,3 +65,60 @@ class UserAuthenticationController(Controller):
     async def logout_user(self, context: ServerContext, session: Session) -> None:
         session.user_id = None
         await session.to_storage(context.store)
+
+
+class UserSelfController(Controller):
+    path = "/user/self"
+    guards = [guard_logged_in]
+    dependencies = {"user": Provide(provide_user)}
+
+    @get("/")
+    async def get_self(self, user: User) -> RedactedUser:
+        return user.redact()
+
+    @post("/settings/username")
+    async def update_settings_username(self, user: User, username: str) -> RedactedUser:
+        check = await User.from_query(query={"username": username})
+        if len(check) > 0:
+            raise MethodNotAllowedException("A user with that username already exists.")
+
+        user.username = username
+        await user.save()
+        return user.redact()
+
+    @post("/settings/display_name")
+    async def update_settings_display_name(
+        self, user: User, display_name: str
+    ) -> RedactedUser:
+        user.display_name = display_name
+        await user.save()
+        return user.redact()
+
+    @post("/settings/avatar")
+    async def update_settings_avatar(
+        self,
+        user: User,
+        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> RedactedUser:
+        contents = await data.read()
+        generated_file = await GridFile.create(
+            contents,
+            "users",
+            user.id,
+            file_name=data.filename,
+            file_type=data.content_type,
+        )
+        user.avatar = f"/files/{generated_file.id}"
+        await user.save()
+        return user.redact()
+
+    @delete("/settings/avatar")
+    async def update_settings_clear_avatar(self, user: User) -> None:
+        if user.avatar:
+            file_id = user.avatar.split("/")[-1]
+            result = await GridFile.from_id(file_id)
+            if result:
+                await result.delete()
+
+            user.avatar = None
+            await user.save()

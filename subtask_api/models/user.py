@@ -14,11 +14,13 @@ class RedactedUser(BaseModel):
     id: str
     username: str
     display_name: str
+    avatar: str | None
 
 
 class User(BaseObject):
     username: str
     display_name: str
+    avatar: str | None = None
     password_hash: str
     password_salt: str
 
@@ -56,6 +58,7 @@ class User(BaseObject):
             id=self.id,
             username=self.username,
             display_name=self.display_name,
+            avatar=self.avatar,
         )
 
     async def get_connections(self) -> list[UserConnection]:

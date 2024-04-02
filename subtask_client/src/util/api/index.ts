@@ -4,6 +4,7 @@ import { SessionType } from "./types/session";
 import { UserType } from "./types/user";
 import { useApiNamespace_userAuth } from "./namespaces/userAuth";
 import { useApiNamespace_connections } from "./namespaces/connections";
+import { useApiNamespace_user } from "./namespaces/user";
 
 export function useApi(): ApiContextType {
     return useContext(ApiContext);
@@ -57,8 +58,10 @@ export function useApiReload(): () => Promise<void> {
 export function useApiMethods() {
     const ns_userAuth = useApiNamespace_userAuth();
     const ns_connections = useApiNamespace_connections();
+    const ns_user = useApiNamespace_user();
     return {
         userAuth: ns_userAuth,
+        user: ns_user,
         connections: ns_connections,
     };
 }

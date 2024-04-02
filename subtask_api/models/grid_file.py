@@ -1,16 +1,9 @@
-from base64 import urlsafe_b64encode
 import mimetypes
 from secrets import token_urlsafe
 from typing import AsyncIterator
 from pydantic import Field
 from .base import BaseObject
-from motor.motor_asyncio import (
-    AsyncIOMotorGridFSBucket,
-    AsyncIOMotorGridIn,
-    AsyncIOMotorGridOut,
-)
-
-mimetypes.guess_extension()
+from motor.motor_asyncio import AsyncIOMotorGridFSBucket
 
 
 class GridFile(BaseObject):
@@ -41,7 +34,7 @@ class GridFile(BaseObject):
         await bucket.upload_from_stream_with_id(
             file_id,
             file_name,
-            urlsafe_b64encode(content).decode(),
+            content,
             metadata={
                 "contentType": file_type,
                 "owner": f"{owner_collection}:{owner_id}",
@@ -55,6 +48,7 @@ class GridFile(BaseObject):
             owner_id=owner_id,
         )
         await new_file.save()
+        return new_file
 
     async def get_content(self) -> AsyncIterator[bytes]:
         bucket = AsyncIOMotorGridFSBucket(self.get_settings().motor_db)
