@@ -8,3 +8,4 @@ from .user import (
     guard_logged_in,
 )
 from .connection import RedactedUserConnection, UserConnection
+from .grid_file import GridFile
