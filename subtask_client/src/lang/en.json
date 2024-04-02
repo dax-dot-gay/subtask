@@ -12,6 +12,17 @@
     "connections": {
       "github": "GitHub",
       "gitlab": "GitLab"
+    },
+    "modal": {
+      "confirm": {
+        "delete": {
+          "title": "Confirm Deletion"
+        }
+      }
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "cancel": "Cancel"
     }
   },
   "views": {
@@ -79,6 +90,9 @@
           },
           "item": {
             "unknown": "Unknown Connection"
+          },
+          "delete": {
+            "confirm": "Are you sure you want to remove this connection? This will disable sync for any projects related to it."
           }
         }
       }

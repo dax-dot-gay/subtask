@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useApiMethods, useUser } from "../../../util/api";
 import {
+    ActionIcon,
     Avatar,
     Badge,
     Button,
@@ -22,9 +23,17 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./userSettings.scss";
 import { UserConnectionType } from "../../../util/api/types/connection";
+import { modals } from "@mantine/modals";
 
-function ConnectionItem({ connection }: { connection: UserConnectionType }) {
+function ConnectionItem({
+    connection,
+    reloadConnections,
+}: {
+    connection: UserConnectionType;
+    reloadConnections: () => Promise<void>;
+}) {
     const { t } = useTranslation();
+    const { connections } = useApiMethods();
     const typeBadge = useMemo(() => {
         switch (connection.type) {
             case "github":
@@ -72,6 +81,33 @@ function ConnectionItem({ connection }: { connection: UserConnectionType }) {
                         {typeBadge}
                     </Stack>
                 </Group>
+                <ActionIcon
+                    variant="subtle"
+                    size="lg"
+                    color="red"
+                    onClick={() =>
+                        modals.openConfirmModal({
+                            title: t("common.modal.confirm.delete.title"),
+                            children: (
+                                <Text>
+                                    {t(
+                                        "modals.userSettings.sections.connections.delete.confirm"
+                                    )}
+                                </Text>
+                            ),
+                            labels: {
+                                confirm: t("common.actions.confirm"),
+                                cancel: t("common.actions.cancel"),
+                            },
+                            onConfirm: () =>
+                                connections.operation
+                                    .deleteConnection(connection.id)
+                                    .then(reloadConnections),
+                        })
+                    }
+                >
+                    <IconPlugConnectedX size={20} />
+                </ActionIcon>
             </Group>
         </Paper>
     );
@@ -96,10 +132,13 @@ function ConnectionSettingsPanel() {
         UserConnectionType[]
     >([]);
 
+    const reloadConnections = useCallback(async () => {
+        const value = await connections.oauth.getConnections();
+        setConnectionsList(value ?? []);
+    }, [connections.oauth.getConnections]);
+
     useEffect(() => {
-        connections.oauth
-            .getConnections()
-            .then((value) => setConnectionsList(value ?? []));
+        reloadConnections();
     }, [user?.id]);
 
     return user ? (
@@ -142,7 +181,11 @@ function ConnectionSettingsPanel() {
                 ) : (
                     <Stack gap="sm">
                         {connectionsList.map((v) => (
-                            <ConnectionItem connection={v} key={v.id} />
+                            <ConnectionItem
+                                connection={v}
+                                key={v.id}
+                                reloadConnections={reloadConnections}
+                            />
                         ))}
                     </Stack>
                 )}

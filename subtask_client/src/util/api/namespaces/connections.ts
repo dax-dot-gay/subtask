@@ -47,12 +47,44 @@ export function useApiNamespace_connections() {
         }
     }, [request]);
 
+    const opGetConnection = useCallback(
+        async (connectionId: string) => {
+            const result = await request<UserConnectionType>(
+                `/connections/${connectionId}`
+            );
+            if (result.success) {
+                return result.data;
+            } else {
+                return null;
+            }
+        },
+        [request]
+    );
+
+    const opDeleteConnection = useCallback(
+        async (connectionId: string) => {
+            const result = await request<null>(`/connections/${connectionId}`, {
+                method: "DELETE",
+            });
+            if (result.success) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        [request]
+    );
+
     if (api.status === "ready" && api.user) {
         return {
             oauth: {
                 getRedirect: getOAuthRedirect,
                 authenticate: authenticateOAuth,
                 getConnections: getAllConnections,
+            },
+            operation: {
+                getConnection: opGetConnection,
+                deleteConnection: opDeleteConnection,
             },
         };
     } else {
@@ -61,6 +93,10 @@ export function useApiNamespace_connections() {
                 getRedirect: async () => null,
                 authenticate: async () => null,
                 getConnections: async () => [],
+            },
+            operation: {
+                getConnection: async () => null,
+                deleteConnection: async () => false,
             },
         };
     }

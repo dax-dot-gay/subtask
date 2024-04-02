@@ -1,15 +1,28 @@
 from typing import Any
-from litestar import get, post, Controller
+from httpx import delete
+from litestar import get, post, Controller, delete
 from ..models import (
     User,
     provide_user,
     guard_logged_in,
     RedactedUserConnection,
+    UserConnection,
 )
 from litestar.di import Provide
 from ..connections import *
 from ..utils import ServerContext
 from litestar.exceptions import *
+
+
+async def provide_connection(user: User, connection_id: str) -> UserConnection:
+    result = await UserConnection.get(connection_id)
+    if not result:
+        raise NotFoundException("Connection does not exist/is not owned by user")
+
+    if result.user_id != user.id:
+        raise NotFoundException("Connection does not exist/is not owned by user")
+
+    return result
 
 
 class ConnectionController(Controller):
@@ -62,3 +75,20 @@ class ConnectionController(Controller):
                 raise InternalServerException("Failed to get authentication token.")
 
         raise NotFoundException(f"Unknown connection scheme `{connection_type}`")
+
+
+class ConnectionOperationController(Controller):
+    path = "/connections/{connection_id:str}"
+    guards = [guard_logged_in]
+    dependencies = {
+        "user": Provide(provide_user),
+        "conn": Provide(provide_connection),
+    }
+
+    @get("/")
+    async def get_connection(self, conn: UserConnection) -> RedactedUserConnection:
+        return conn.redact()
+
+    @delete("/")
+    async def delete_connection(self, conn: UserConnection) -> None:
+        await conn.delete()
