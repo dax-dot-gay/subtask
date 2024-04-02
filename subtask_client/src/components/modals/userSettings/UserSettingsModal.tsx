@@ -5,10 +5,8 @@ import {
     Badge,
     Button,
     Group,
-    Menu,
     Modal,
     Paper,
-    Space,
     Stack,
     Tabs,
     Text,
@@ -16,10 +14,8 @@ import {
 import {
     IconBrandGithub,
     IconBrandGitlab,
-    IconChevronDown,
     IconPlug,
     IconPlugConnectedX,
-    IconPlus,
     IconUser,
     IconUserCog,
 } from "@tabler/icons-react";
@@ -142,37 +138,23 @@ function ConnectionSettingsPanel() {
                 )}
             </Paper>
             {user.connections.length > 0 && (
-                <Menu position="bottom-end" width={256} withArrow>
-                    <Menu.Target>
-                        <Button
-                            fullWidth
-                            leftSection={<IconPlus size={20} />}
-                            justify="space-between"
-                            variant="light"
-                        >
-                            {t(
-                                "modals.userSettings.sections.connections.create"
-                            )}
-                            <Space w="sm" />
-                            <IconChevronDown size={16} />
-                        </Button>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item
-                            leftSection={<IconBrandGithub size={20} />}
-                            style={{ textAlign: "right" }}
-                            onClick={() => connect("github")}
-                        >
-                            {t("common.connections.github")}
-                        </Menu.Item>
-                        <Menu.Item
-                            leftSection={<IconBrandGitlab size={20} />}
-                            style={{ textAlign: "right" }}
-                        >
-                            {t("common.connections.gitlab")}
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
+                <Group gap="sm" wrap="nowrap" grow>
+                    <Button
+                        leftSection={<IconBrandGithub size={20} />}
+                        color="rgb(36, 41, 47)"
+                        onClick={() => connect("github")}
+                        justify="space-between"
+                    >
+                        {t("common.connections.github")}
+                    </Button>
+                    <Button
+                        leftSection={<IconBrandGitlab size={20} />}
+                        color="rgb(	252, 109, 38)"
+                        justify="space-between"
+                    >
+                        {t("common.connections.gitlab")}
+                    </Button>
+                </Group>
             )}
         </Stack>
     ) : (
