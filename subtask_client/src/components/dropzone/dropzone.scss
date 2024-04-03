@@ -1,0 +1,15 @@
+.dropzone {
+    position: relative;
+    .current-image {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        width: calc(100% - 16px);
+    }
+
+    &.with-current {
+        .dropzone-text {
+            transform: translate(0, calc(-1 * 2.375rem * var(--mantine-scale)));
+        }
+    }
+}

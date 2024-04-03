@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 from ..base import BaseObject
 from ..user import User
@@ -35,11 +36,16 @@ class ProjectMember(BaseModel):
         return self.permission <= permission
 
 
+class ProjectConnection(BaseModel):
+    connection_id: str
+    location: Any
+
+
 class Project(BaseObject):
     name: str
     summary: str | None = None
     image: str | None = None
-    connection_id: str | None = None
+    connection: ProjectConnection | None = None
     members: list[ProjectMember]
 
     class Settings:

@@ -4,7 +4,6 @@ import {
     ActionIcon,
     Avatar,
     Badge,
-    Box,
     Button,
     Group,
     Modal,
@@ -18,7 +17,6 @@ import {
     IconBrandGithub,
     IconBrandGitlab,
     IconDeviceFloppy,
-    IconPhotoX,
     IconPlug,
     IconPlugConnectedX,
     IconSignature,
@@ -26,12 +24,13 @@ import {
     IconUserCircle,
     IconUserCog,
 } from "@tabler/icons-react";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./userSettings.scss";
 import { UserConnectionType } from "../../../util/api/types/connection";
 import { modals } from "@mantine/modals";
 import { useNotif } from "../../../util/notifs";
+import { SubtaskDropzone } from "../../dropzone/SubtaskDropzone";
 
 function ConnectionItem({
     connection,
@@ -306,75 +305,25 @@ function GeneralSettingsPanel() {
                     <IconDeviceFloppy size={20} />
                 </ActionIcon>
             </Group>
-            <Box
-                className={
-                    "profile-drop" + (user.avatar ? " with-current" : "")
-                }
-            >
-                <Dropzone
-                    onDrop={(files) => {
-                        if (files.length > 0) {
-                            userApi.self.updateAvatar(files[0]).then(reload);
-                        }
-                    }}
-                    accept={IMAGE_MIME_TYPE}
-                    maxFiles={1}
-                    multiple={false}
-                    maxSize={64 * 1024 ** 2}
-                >
-                    <Group
-                        justify="center"
-                        gap="xl"
-                        mih={220}
-                        style={{ pointerEvents: "none" }}
-                        className="dropzone-text"
-                    >
-                        <IconUserCircle
-                            size={64}
-                            color="var(--mantine-color-dimmed)"
-                        />
-
-                        <div>
-                            <Text size="xl" inline>
-                                {t("common.actions.dropzone.instruction")}
-                            </Text>
-                            <Text size="sm" c="dimmed" inline mt={7}>
-                                {t(
-                                    "modals.userSettings.sections.general.field.profile.dropzone"
-                                )}
-                            </Text>
-                        </div>
-                    </Group>
-                </Dropzone>
-                {user.avatar && (
-                    <Paper p="sm" className="current-profile">
-                        <Group gap="sm" justify="space-between">
-                            <Stack gap={2}>
-                                <Text>
-                                    {t(
-                                        "modals.userSettings.sections.general.field.profile.current"
-                                    )}
-                                </Text>
-                                <Button
-                                    variant="light"
-                                    size="xs"
-                                    color="red"
-                                    leftSection={<IconPhotoX size={16} />}
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        userApi.self.clearAvatar().then(reload);
-                                    }}
-                                >
-                                    {t(
-                                        "modals.userSettings.sections.general.field.profile.remove"
-                                    )}
-                                </Button>
-                            </Stack>
-                            <Avatar size="lg" src={`/api${user.avatar}`} />
-                        </Group>
-                    </Paper>
+            <SubtaskDropzone
+                preview={user.avatar ? `/api${user.avatar}` : null}
+                onChange={(value) => {
+                    if (value) {
+                        userApi.self.updateAvatar(value).then(reload);
+                    } else {
+                        userApi.self.clearAvatar().then(reload);
+                    }
+                }}
+                title={t(
+                    "modals.userSettings.sections.general.field.profile.title"
                 )}
-            </Box>
+                subtitle={t(
+                    "modals.userSettings.sections.general.field.profile.subtitle"
+                )}
+                icon={IconUserCircle as any}
+                accept={IMAGE_MIME_TYPE}
+                maxSize={64 * 1024 ** 2}
+            />
         </Stack>
     ) : (
         <></>

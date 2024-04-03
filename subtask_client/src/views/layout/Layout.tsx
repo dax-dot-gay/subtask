@@ -26,6 +26,7 @@ import "./layout.scss";
 import { useApi, useApiMethods, useUser } from "../../util/api";
 import { useEffect } from "react";
 import { UserSettingsModal } from "../../components/modals/userSettings/UserSettingsModal";
+import { ProjectCreateModal } from "../../components/modals/projectCreate/ProjectCreateModal";
 
 export function SiteLayout() {
     const { t } = useTranslation();
@@ -38,6 +39,9 @@ export function SiteLayout() {
     const location = useLocation();
     const { userAuth } = useApiMethods();
     const [settings, { open: openSettings, close: closeSettings }] =
+        useDisclosure(false);
+
+    const [projectCreate, { open: openProject, close: closeProject }] =
         useDisclosure(false);
 
     useEffect(() => {
@@ -109,6 +113,7 @@ export function SiteLayout() {
                                 fullWidth
                                 leftSection={<IconPlus size={20} />}
                                 justify="space-between"
+                                onClick={openProject}
                             >
                                 {t("layout.actions.createProject")}
                             </Button>
@@ -162,6 +167,10 @@ export function SiteLayout() {
                     <Outlet />
                 </Box>
                 <UserSettingsModal open={settings} onClose={closeSettings} />
+                <ProjectCreateModal
+                    open={projectCreate}
+                    onClose={closeProject}
+                />
             </AppShell.Main>
         </AppShell>
     );
