@@ -1,5 +1,4 @@
 from typing import Any
-from httpx import delete
 from litestar import get, post, Controller, delete
 from ..models import (
     User,
@@ -7,6 +6,7 @@ from ..models import (
     guard_logged_in,
     RedactedUserConnection,
     UserConnection,
+    ConnectionLocation,
 )
 from litestar.di import Provide
 from ..connections import *
@@ -92,3 +92,10 @@ class ConnectionOperationController(Controller):
     @delete("/")
     async def delete_connection(self, conn: UserConnection) -> None:
         await conn.delete()
+
+    @get("/locations")
+    async def get_possible_locations(
+        self, conn: UserConnection, context: ServerContext
+    ) -> list[ConnectionLocation]:
+        provider = await get_provider(conn, context)
+        return await provider.get_locations()

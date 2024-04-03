@@ -1,6 +1,6 @@
 from datetime import datetime
 from secrets import token_urlsafe
-from typing import Literal
+from typing import TYPE_CHECKING, Any, Literal
 from .base import BaseObject
 from pydantic import BaseModel, Field
 
@@ -11,6 +11,12 @@ class RedactedUserConnection(BaseModel):
     type: Literal["github"]
     account_name: str | None = None
     account_image: str | None = None
+
+
+class ConnectionLocation(BaseModel):
+    id: Any
+    display_name: str
+    description: str | None = None
 
 
 class UserConnection(BaseObject):

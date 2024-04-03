@@ -32,7 +32,8 @@
         },
         "current": "Preview File",
         "clear": "Clear File"
-      }
+      },
+      "create": "Create"
     }
   },
   "views": {
@@ -126,7 +127,19 @@
       "title": "New Project",
       "field": {
         "name": "Project Name",
-        "summary": "Project Summary"
+        "summary": "Project Summary",
+        "image": {
+          "subtitle": "Upload a project image (must not exceed 64 MB)",
+          "label": "Project Image"
+        },
+        "sync": {
+          "select": "Select Connection"
+        }
+      },
+      "dividerConnections": "Sync Settings",
+      "section": {
+        "settings": "Project Setup",
+        "connections": "Sync Settings"
       }
     }
   }

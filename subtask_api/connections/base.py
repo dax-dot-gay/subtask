@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
 from pydantic import BaseModel
 from ..utils import OAUTH_CONFIGS
-from ..models import UserConnection
+from ..models import UserConnection, ConnectionLocation
 
 
 class ConnectionProfileInfo(BaseModel):
@@ -42,3 +42,9 @@ class BaseConnectionProvider:
     ) -> None:
         self.config = config
         self.connection = connection
+
+    async def get_profile_info(self) -> ConnectionProfileInfo:
+        raise NotImplementedError
+
+    async def get_locations(self) -> list[ConnectionLocation]:
+        raise NotImplementedError

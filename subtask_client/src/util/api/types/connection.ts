@@ -5,3 +5,9 @@ export type UserConnectionType = {
     account_name: string | null;
     account_image: string | null;
 };
+
+export type ConnectionLocation<TId = any> = {
+    id: TId;
+    display_name: string;
+    description: string | null;
+};

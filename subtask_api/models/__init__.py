@@ -7,6 +7,6 @@ from .user import (
     provide_user,
     guard_logged_in,
 )
-from .connection import RedactedUserConnection, UserConnection
+from .connection import RedactedUserConnection, UserConnection, ConnectionLocation
 from .grid_file import GridFile
 from .project_types import *

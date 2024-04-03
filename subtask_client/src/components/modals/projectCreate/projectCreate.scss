@@ -1,0 +1,22 @@
+.locations-box {
+    overflow: hidden;
+    position: relative;
+
+    .locations-scroll {
+        max-height: 50vh;
+        overflow-y: scroll;
+
+        .location-item {
+            background-color: var(--mantine-color-default);
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--mantine-color-default-hover);
+            }
+
+            &.selected {
+                background-color: var(--mantine-color-default-border);
+            }
+        }
+    }
+}

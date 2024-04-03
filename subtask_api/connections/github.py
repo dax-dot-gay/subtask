@@ -2,9 +2,10 @@ import asyncio
 from datetime import UTC, datetime, timedelta
 from typing import Type, TypeVar
 from github import Github, Auth
+from litestar.exceptions import ClientException
 import httpx
 
-from ..models import UserConnection
+from ..models import UserConnection, ConnectionLocation
 
 from .base import BaseConnectionProvider, ConnectionProfileInfo
 from ..utils import GithubOAuthConfig
@@ -35,8 +36,12 @@ class GithubConnectionProvider(BaseConnectionProvider):
     async def create_authenticated_github(
         cls, config: GithubOAuthConfig, connection: UserConnection
     ) -> Github:
-        if datetime.now(UTC) > connection.access_expire:
+        if datetime.now(UTC) > connection.access_expire.astimezone(UTC):
             connection = await cls.refresh(config, connection)
+        if not connection:
+            raise ClientException(
+                "GH access token is invalid and was unable to be refreshed."
+            )
         return Github(
             auth=Auth.AppUserAuth(
                 config.client_id, config.client_secret, connection.access_token
@@ -47,6 +52,7 @@ class GithubConnectionProvider(BaseConnectionProvider):
     async def refresh(
         cls, config: GithubOAuthConfig, connection: UserConnection
     ) -> UserConnection:
+        print(connection)
         async with httpx.AsyncClient() as client:
             result = await client.post(
                 "https://github.com/login/oauth/access_token",
@@ -64,6 +70,8 @@ class GithubConnectionProvider(BaseConnectionProvider):
                     k: v[0] if type(v) == list else v
                     for k, v in parse_qs(result.text).items()
                 }
+                if "error" in result_dict.keys():
+                    return None
                 return UserConnection(
                     id=connection.id,
                     user_id=connection.user_id,
@@ -148,3 +156,19 @@ class GithubConnectionProvider(BaseConnectionProvider):
         return ConnectionProfileInfo(
             account_name=result.name, account_image=result.avatar_url
         )
+
+    async def get_locations(self) -> list[ConnectionLocation]:
+        repos = await asyncio.to_thread(
+            lambda: [
+                i
+                for i in self.github.get_user().get_repos(
+                    affiliation="owner,collaborator", sort="updated"
+                )
+            ]
+        )
+        return [
+            ConnectionLocation(
+                id=repo.id, display_name=repo.full_name, description=repo.description
+            )
+            for repo in repos
+        ]

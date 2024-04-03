@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useApi, useApiRequest } from "..";
-import { UserConnectionType } from "../types/connection";
+import { ConnectionLocation, UserConnectionType } from "../types/connection";
 
 export function useApiNamespace_connections() {
     const api = useApi();
@@ -75,6 +75,20 @@ export function useApiNamespace_connections() {
         [request]
     );
 
+    const opGetLocations = useCallback(
+        async (connectionId: string) => {
+            const result = await request<ConnectionLocation[]>(
+                `/connections/${connectionId}/locations`
+            );
+            if (result.success) {
+                return result.data;
+            } else {
+                return [];
+            }
+        },
+        [request]
+    );
+
     if (api.status === "ready" && api.user) {
         return {
             oauth: {
@@ -85,6 +99,7 @@ export function useApiNamespace_connections() {
             operation: {
                 getConnection: opGetConnection,
                 deleteConnection: opDeleteConnection,
+                getLocations: opGetLocations,
             },
         };
     } else {
@@ -97,6 +112,7 @@ export function useApiNamespace_connections() {
             operation: {
                 getConnection: async () => null,
                 deleteConnection: async () => false,
+                getLocations: async () => [],
             },
         };
     }
