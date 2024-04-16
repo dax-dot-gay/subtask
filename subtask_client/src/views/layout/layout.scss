@@ -28,6 +28,22 @@
                 background-color: var(--mantine-color-default);
                 overflow: hidden;
 
+                .project-item {
+                    position: relative;
+                    transition: background-color 0.1s;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: var(--mantine-color-default-hover);
+                    }
+
+                    .permission-icon {
+                        position: absolute;
+                        top: 8px;
+                        right: 8px;
+                    }
+                }
+
                 .nav-project-scroll {
                     max-height: 100%;
                     overflow: hidden;

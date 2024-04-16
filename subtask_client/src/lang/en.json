@@ -3,6 +3,13 @@
     "names": {
       "app": "Subtask"
     },
+    "permissions": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "manage": "Manage",
+      "edit": "Edit",
+      "view": "View"
+    },
     "notifications": {
       "error": "Error",
       "warning": "Warning",
@@ -83,6 +90,11 @@
     "actions": {
       "logout": "Logout",
       "createProject": "New Project"
+    },
+    "project": {
+      "item": {
+        "no_summary": "No description"
+      }
     }
   },
   "modals": {

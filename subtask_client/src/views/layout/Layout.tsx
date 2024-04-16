@@ -24,9 +24,61 @@ import {
 } from "@tabler/icons-react";
 import "./layout.scss";
 import { useApi, useApiMethods, useUser } from "../../util/api";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserSettingsModal } from "../../components/modals/userSettings/UserSettingsModal";
 import { ProjectCreateModal } from "../../components/modals/projectCreate/ProjectCreateModal";
+import { Project } from "../../util/api/types/project";
+import { PermissionIcon } from "../../components/projects/PermissionIcon";
+
+function ProjectItem({ project }: { project: Project }) {
+    const { t } = useTranslation();
+    const user = useUser();
+
+    const member = useMemo(() => {
+        if (user?.id) {
+            return project.members.find((v) => v.user_id === user.id) ?? null;
+        } else {
+            return null;
+        }
+    }, [user?.id, project.members]);
+
+    return (
+        <Paper className="project-item" p="sm" radius="sm">
+            <Group gap="sm">
+                {project.image ? (
+                    <Avatar
+                        src={`/api${project.image}`}
+                        className="project-icon"
+                    />
+                ) : (
+                    <Avatar className="project-icon">
+                        <IconSubtask />
+                    </Avatar>
+                )}
+                <Stack gap={0}>
+                    <Text>{project.name}</Text>
+                    <Text size="xs" c="dimmed" lineClamp={1}>
+                        {project.summary
+                            ? project.summary.split("\n")[0]
+                            : t("layout.project.item.no_summary")}
+                    </Text>
+                </Stack>
+            </Group>
+            {member && (
+                <PermissionIcon
+                    permission={member.permission}
+                    withTooltip
+                    className="permission-icon"
+                    size={18}
+                    tooltipProps={{
+                        position: "right",
+                        withArrow: true,
+                    }}
+                />
+            )}
+        </Paper>
+    );
+}
 
 export function SiteLayout() {
     const { t } = useTranslation();
@@ -37,9 +89,14 @@ export function SiteLayout() {
     const user = useUser();
     const nav = useNavigate();
     const location = useLocation();
-    const { userAuth } = useApiMethods();
+    const { userAuth, projects: projectApi } = useApiMethods();
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    const reloadProjects = useCallback(() => {
+        projectApi.meta.list().then(setProjects);
+    }, [projectApi.meta.list]);
     const [settings, { open: openSettings, close: closeSettings }] =
-        useDisclosure(false);
+        useDisclosure(false, { onClose: reloadProjects });
 
     const [projectCreate, { open: openProject, close: closeProject }] =
         useDisclosure(false);
@@ -49,6 +106,10 @@ export function SiteLayout() {
             nav("login");
         }
     }, [api.status, user?.id, location.pathname]);
+
+    useEffect(() => {
+        reloadProjects();
+    }, [reloadProjects]);
 
     return (
         <AppShell
@@ -102,10 +163,14 @@ export function SiteLayout() {
                             shadow="sm"
                         >
                             <ScrollAreaAutosize className="nav-project-scroll">
-                                <Stack
-                                    gap="sm"
-                                    className="nav-stack-projects"
-                                ></Stack>
+                                <Stack gap="sm" className="nav-stack-projects">
+                                    {projects.map((project) => (
+                                        <ProjectItem
+                                            project={project}
+                                            key={project.id}
+                                        />
+                                    ))}
+                                </Stack>
                             </ScrollAreaAutosize>
                         </Paper>
                         <Box p="xs">

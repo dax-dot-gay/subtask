@@ -10,7 +10,6 @@ import {
     Modal,
     Paper,
     ScrollArea,
-    ScrollAreaAutosize,
     Select,
     Space,
     Stack,
@@ -56,7 +55,8 @@ export function ProjectCreateModal({
     onClose: () => void;
 }) {
     const { t } = useTranslation();
-    const { connections: connectionApi } = useApiMethods();
+    const { connections: connectionApi, projects: projectApi } =
+        useApiMethods();
     const form = useForm<ProjectCreateForm>({
         initialValues: {
             name: "",
@@ -125,7 +125,56 @@ export function ProjectCreateModal({
                 </Group>
             }
         >
-            <form onSubmit={form.onSubmit((values) => console.log(values))}>
+            <form
+                onSubmit={form.onSubmit((values) => {
+                    console.log(values, selectedConnection, selectedLocation);
+                    if (values.image) {
+                        const reader = new FileReader();
+                        reader.addEventListener("load", () => {
+                            projectApi.meta
+                                .create({
+                                    name: values.name,
+                                    summary: values.summary,
+                                    image: reader.result as string,
+                                    connection:
+                                        selectedConnection && selectedLocation
+                                            ? {
+                                                  connection_id:
+                                                      selectedConnection.id,
+                                                  location: selectedLocation.id,
+                                              }
+                                            : undefined,
+                                })
+                                .then((value) => {
+                                    if (value) {
+                                        onClose();
+                                    }
+                                });
+                        });
+                        reader.readAsDataURL(values.image);
+                    } else {
+                        projectApi.meta
+                            .create({
+                                name: values.name,
+                                summary: values.summary,
+                                image: undefined,
+                                connection:
+                                    selectedConnection && selectedLocation
+                                        ? {
+                                              connection_id:
+                                                  selectedConnection.id,
+                                              location: selectedLocation.id,
+                                          }
+                                        : undefined,
+                            })
+                            .then((value) => {
+                                if (value) {
+                                    onClose();
+                                }
+                            });
+                    }
+                })}
+            >
                 <Accordion defaultValue="general" variant="contained">
                     <AccordionItem value="general">
                         <Accordion.Control>
