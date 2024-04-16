@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
     IconLogout2,
     IconPlus,
@@ -33,6 +33,8 @@ import { PermissionIcon } from "../../components/projects/PermissionIcon";
 function ProjectItem({ project }: { project: Project }) {
     const { t } = useTranslation();
     const user = useUser();
+    const { projectId } = useParams();
+    const nav = useNavigate();
 
     const member = useMemo(() => {
         if (user?.id) {
@@ -43,7 +45,14 @@ function ProjectItem({ project }: { project: Project }) {
     }, [user?.id, project.members]);
 
     return (
-        <Paper className="project-item" p="sm" radius="sm">
+        <Paper
+            className={
+                "project-item" + (projectId === project.id ? " selected" : "")
+            }
+            p="sm"
+            radius="sm"
+            onClick={() => nav(`/project/${project.id}`)}
+        >
             <Group gap="sm">
                 {project.image ? (
                     <Avatar
