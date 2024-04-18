@@ -43,6 +43,7 @@ app = Litestar(
         ConnectionOperationController,
         UserSelfController,
         ProjectMetaController,
+        SingleProjectController,
     ],
     state=State(state={"context": None}),
     on_startup=[handle_startup],

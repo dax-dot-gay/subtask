@@ -46,7 +46,7 @@ class BaseObject(Document):
         Returns:
             TBase | None: The located Object, or None if not found.
         """
-        result = await cls.get(id)
+        result = await cls.get(id, with_children=True)
         return result
 
 

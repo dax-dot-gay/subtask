@@ -23,6 +23,13 @@ class ProjectCreationModel(BaseModel):
     connection: ProjectConnection | None = None
 
 
+async def provide_project(user: User, id: str) -> Project:
+    result = await Project.from_id(id)
+    if result and user.id in [i.user_id for i in result.members]:
+        return result
+    raise NotFoundException(f"Project `{id}` not found or not accessible.")
+
+
 class ProjectMetaController(Controller):
     path = "/projects"
     guards = [guard_logged_in]
@@ -60,3 +67,13 @@ class ProjectMetaController(Controller):
     @get("/")
     async def get_projects(self, user: User) -> list[Project]:
         return await Project.from_query(query={"members.user_id": user.id})
+
+
+class SingleProjectController(Controller):
+    path = "/projects/{id:str}"
+    guards = [guard_logged_in]
+    dependencies = {"user": Provide(provide_user), "project": Provide(provide_project)}
+
+    @get("/")
+    async def get_project(self, project: Project) -> Project:
+        return project
