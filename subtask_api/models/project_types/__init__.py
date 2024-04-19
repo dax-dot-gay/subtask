@@ -5,3 +5,5 @@ from .project import (
     ProjectPermission,
     ProjectConnection,
 )
+
+from .task import *

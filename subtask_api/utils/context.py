@@ -6,7 +6,7 @@ import tomllib
 from redis.asyncio import Redis
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from ..models import User, UserConnection, GridFile, Project
+from ..models import *
 from .config import *
 
 
@@ -23,7 +23,17 @@ class ServerContext:
     async def initialize(self):
         await init_beanie(
             database=self.mongo[self.config.databases.mongo.database],
-            document_models=[User, UserConnection, GridFile, Project],
+            document_models=[
+                User,
+                UserConnection,
+                GridFile,
+                Project,
+                Task,
+                TaskAttribute,
+                TaskField,
+                TaskStatus,
+                TaskTag,
+            ],
         )
 
 
